@@ -48,7 +48,7 @@ public class DrawInstanceIndirect : MonoBehaviour
         uint threadGroupSizeZ=0;
         cmpShader.GetKernelThreadGroupSizes(m_kernel, out threadGroupSizeX, out threadGroupSizeY, out threadGroupSizeZ);
 
-        GroupX = InstanceCount/(int)threadGroupSizeX;
+        GroupX = Mathf.CeilToInt(InstanceCount / (int)threadGroupSizeX);
 
         m_dataBuffer = new ComputeBuffer(InstanceCount, (3+3+3)*sizeof(float));
 
@@ -126,11 +126,13 @@ public class DrawInstanceIndirect : MonoBehaviour
         if (m_dataBuffer != null)
         {
             m_dataBuffer.Release();
+            m_dataBuffer = null;
         }
 
         if (m_argBuffer != null)
         {
             m_argBuffer.Release();
+            m_argBuffer = null;
         }
     }
 }
