@@ -1,0 +1,26 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct TransInCS
+{
+    float3 pos;
+    float3 eulerAngle;
+    float3 scale;
+};
+
+RWStructuredBuffer<TransInCS> _ResultTrans;
+RWStructuredBuffer<float> _Result;
+float _Multiplier;
+
+[numthreads(8,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    int index = id.x;
+    _Result[index] = index * _Multiplier;
+    TransInCS trans = _ResultTrans[index];
+
+    trans.pos = _ResultTrans[index].pos + float3(1,1,1)*_Multiplier;
+    trans.eulerAngle = _ResultTrans[index].eulerAngle + float3(4,5,6);
+    trans.scale = _ResultTrans[index].scale + float3(7,8,9);
+    _ResultTrans[index] = trans;
+}

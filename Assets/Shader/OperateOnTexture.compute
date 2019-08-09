@@ -1,0 +1,53 @@
+﻿
+#pragma kernel CSMain_Tex
+#pragma kernel CSMain_TexBlur
+
+RWTexture2D<float4> _ResultTex;
+RWTexture2D<float4> _SrcTex;
+
+float _Distance;
+float _DistanceX;
+float _DistanceY;
+float2 _Center;
+
+[numthreads(32, 32, 1)]
+void CSMain_Tex (uint3 groupThreadID : SV_GroupThreadID, uint3 groupID : SV_GroupID, uint3 id : SV_DispatchThreadID)
+{
+    float2 texcoord = id.xy;
+    if(id.x <= 200 && id.y <= 200)
+    {
+        _ResultTex[texcoord] = float4(1,0,0,1);
+    }
+    else
+    {
+        _ResultTex[texcoord] = _SrcTex[texcoord];
+    }
+}
+
+[numthreads(32, 32, 1)]
+void CSMain_TexBlur (uint3 groupThreadID : SV_GroupThreadID, uint3 groupID : SV_GroupID, uint3 id : SV_DispatchThreadID)
+{
+    // 径向模糊 //
+    float2 center = _Center*1024;
+
+    float2 dir = center - id.xy;
+    dir = normalize(dir);
+    
+    float4 col = 0;
+    const int SampleCount = 5;
+    for(int i=0; i<SampleCount; i++)
+    {
+        float2 texcoord = clamp(id.xy + dir*_Distance*i, 0, 1024);
+        col += _SrcTex[texcoord];
+    }
+
+    _ResultTex[id.xy] = col/SampleCount;
+   
+    // // 整体向左偏移100像素 //
+    // _ResultTex[id.xy] = float4(0,0,0,1);
+    // float2 texcoord = id.xy + float2(500,0);
+    // if(texcoord.x >= 0 && texcoord.x <= 1024)
+    // {
+    //     _ResultTex[id.xy] = _SrcTex[texcoord];
+    // }
+}

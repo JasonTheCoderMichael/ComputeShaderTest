@@ -1,0 +1,38 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain_Texture
+#pragma kernel CSMain_Buffer
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> ResultTex;
+
+struct Data
+{
+	float4 pos;
+	float3 scale;
+	float3 eulerAngle;
+	float4x4 matrix_M;
+};
+
+RWStructuredBuffer<Data> ResultBuffer;
+
+[numthreads(32,32,1)]
+void CSMain_Texture (uint3 id : SV_DispatchThreadID)
+{
+	// TODO: insert actual code here!
+
+	// id.xy 不是纹理坐标，其范围在[width, height] 内，不是[0,1] //
+	float r = (id.x > 256 && id.x < 768 && id.y > 256 && id.y < 768) ? 1 : 0;
+	float b = 1 - r;
+	ResultTex[id.xy] = float4(r, 0, b, 1);
+	
+	// ResultTex[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+}
+
+[numthreads(16,1,1)]
+void CSMain_Buffer (uint3 id : SV_DispatchThreadID)
+{
+	ResultBuffer[id.x].pos = mul(ResultBuffer[id.x].matrix_M, ResultBuffer[id.x].pos);
+	ResultBuffer[id.x].eulerAngle = ResultBuffer[id.x].eulerAngle + float3(0, 30, 0);
+	ResultBuffer[id.x].scale = mul((float3x3)ResultBuffer[id.x].matrix_M, ResultBuffer[id.x].scale);
+}

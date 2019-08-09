@@ -1,0 +1,127 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct Data
+{
+	float3 translation;
+	float3 eulerAngle;
+	float3 scale;
+};
+ 
+RWStructuredBuffer<float3> _WayPointBuffer;
+RWStructuredBuffer<Data> _DataBuffer_Origin;
+RWStructuredBuffer<Data> _DataBuffer;
+
+float3 _Center;
+float _Speed;
+float _DeltaTime;
+
+// 效果1, 所有物体都向_Center位置靠近, 当距离小于0.1时回到初始位置, 继续靠近 //
+[numthreads(10, 1, 1)]
+void CSMain1 (uint3 id : SV_DispatchThreadID)
+{
+	int index = id.x;
+
+	float3 curPos = _DataBuffer[index].translation;
+	float3 dir = _Center - curPos;
+	dir = normalize(dir);
+
+	curPos += _DeltaTime * dir * _Speed;
+
+	// 重置位置 //
+	float3 dir2 = _Center - curPos;
+	float distance = dot(dir2, dir2);
+	if(distance < 0.1)
+	{
+		_DataBuffer[index].translation = _DataBuffer_Origin[index].translation;
+	}
+	else
+	{
+		_DataBuffer[index].translation = curPos;
+	}
+
+	_DataBuffer[index].eulerAngle = float3(0,0,0);
+}
+
+// 运动方式2 //
+[numthreads(10, 1, 1)]
+void CSMain2 (uint3 id : SV_DispatchThreadID)
+{
+	int index = id.x;
+
+	// eulerAngle.x 存放当前要去的路点 //
+	int wayPointIndex = _DataBuffer[index].eulerAngle.x;
+
+	float3 curPos = _DataBuffer[index].translation;
+	float3 curDstPos = _WayPointBuffer[wayPointIndex];
+	float2 dir = curDstPos.xz - curPos.xz;
+	float distance = dot(dir, dir);
+	if(distance < 0.1)
+	{
+		wayPointIndex += 1;
+		if(wayPointIndex > 3)
+		{
+			wayPointIndex = 0;
+		}
+		wayPointIndex = clamp(wayPointIndex, 0, 3);
+		_DataBuffer[index].eulerAngle.x = wayPointIndex;	
+	}
+
+	dir = normalize(dir);
+	curPos.xz += dir * _Speed * _DeltaTime;
+
+	_DataBuffer[index].translation.xz = curPos.xz;
+}
+
+static float PI = 3.141593;
+
+// 运动方式3, 所有物体绕y轴旋转, 方式1, 使用 固定的角度和当前的位置 //
+[numthreads(10, 1, 1)]
+void CSMain3 (uint3 id : SV_DispatchThreadID)
+{
+	// 角度 //
+	float curAngleY_Deg = _DeltaTime*_Speed;
+	curAngleY_Deg = curAngleY_Deg%360;
+
+	float curAngleY_Rad = (curAngleY_Deg/180)*PI;
+	float sinTheta;
+	float cosTheta;
+	sincos(curAngleY_Rad, sinTheta, cosTheta);
+
+	// 绕y轴旋转的矩阵 //
+	float3x3 rotateMatrix = float3x3(
+		cosTheta, 0, sinTheta,
+		0, 1, 0,
+		-sinTheta, 0, cosTheta
+	);
+
+	int index = id.x;
+	float3 newPos = mul(rotateMatrix, _DataBuffer[index].translation);
+	_DataBuffer[index].translation = newPos;
+}
+
+// 运动方式3, 所有物体绕y轴旋转, 方式2, 使用 累计的角度和初始位置 //
+[numthreads(10, 1, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	int index = id.x;
+	
+	float curAngleY_Deg = _DataBuffer[index].eulerAngle.y;
+	curAngleY_Deg += _DeltaTime * _Speed;
+	curAngleY_Deg = curAngleY_Deg%360;
+	_DataBuffer[index].eulerAngle.y = curAngleY_Deg;
+
+	float curAngleY_Rad = (curAngleY_Deg/180)*PI;
+	float sinTheta;
+	float cosTheta;
+	sincos(curAngleY_Rad, sinTheta, cosTheta);
+
+	float3x3 rotateMatrix = float3x3(
+		cosTheta, 0, sinTheta,
+		0, 1, 0,
+		-sinTheta, 0, cosTheta
+	);
+
+	float3 newPos = mul(rotateMatrix, _DataBuffer_Origin[index].translation);
+	_DataBuffer[index].translation = newPos;
+}

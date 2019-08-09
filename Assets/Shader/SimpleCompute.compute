@@ -1,0 +1,41 @@
+﻿#pragma kernel CSMain_Float
+#pragma kernel CSMain_Trans
+#pragma kernel CSMain_Tex
+
+struct TransInCS
+{
+    float3 pos;
+    float3 eulerAngle;
+    float3 scale;
+};
+
+RWStructuredBuffer<TransInCS> _ResultTrans;
+RWStructuredBuffer<float> _Result;
+RWTexture2D<float4> _ResultTex;
+
+float _Multiplier;
+
+[numthreads(4,5,1)]
+void CSMain_Float (uint3 id : SV_DispatchThreadID)
+{
+    int index = id.x + id.y*(4*2);
+    _Result[index] = index;
+}
+
+[numthreads(8,1,1)]
+void CSMain_Trans (uint3 id : SV_DispatchThreadID)
+{
+    int index = id.x;
+    TransInCS trans = _ResultTrans[index];
+    trans.pos = _ResultTrans[index].pos + float3(1,2,3);
+    trans.pos *= _Multiplier;
+    trans.eulerAngle = _ResultTrans[index].eulerAngle + float3(4,5,6);
+    trans.scale = _ResultTrans[index].scale  + float3(7,8,9);
+    _ResultTrans[index] = trans;
+}
+
+[numthreads(16,16,1)]
+void CSMain_Tex (uint3 id : SV_DispatchThreadID)
+{
+   _ResultTex[id.xy] = float4(1,0,0,1);
+}
