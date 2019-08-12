@@ -45,7 +45,7 @@ void CSMain1 (uint3 id : SV_DispatchThreadID)
 
 // 运动方式2 //
 [numthreads(100, 1, 1)]
-void CSMain2 (uint3 id : SV_DispatchThreadID)
+void CSMain (uint3 id : SV_DispatchThreadID)
 {
 	int index = id.x;
 
@@ -102,7 +102,7 @@ void CSMain3 (uint3 id : SV_DispatchThreadID)
 
 // 运动方式3, 所有物体绕y轴旋转, 方式2, 使用 累计的角度和初始位置 //
 [numthreads(100, 1, 1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
+void CSMain4 (uint3 id : SV_DispatchThreadID)
 {
 	int index = id.x;
 	

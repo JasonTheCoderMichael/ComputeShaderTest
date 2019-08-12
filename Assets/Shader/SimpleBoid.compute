@@ -1,0 +1,49 @@
+﻿#pragma kernel CSMain
+
+struct BoidData
+{
+	float3 pos;
+	float3 rot;
+	float3 scale;
+};
+
+RWStructuredBuffer<BoidData> _BoidDataBuffer;
+int _BoidCount;
+float _BoidDistance;
+float3 _TargetPos;
+float _DeltaTime;
+float _Speed;
+
+[numthreads(256, 1, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	float3 separation = 0;
+	float3 alignment = 0;
+	float3 cohesion = _TargetPos;
+	int nearbyBoidCount = 1;
+	BoidData curData = _BoidDataBuffer[id.x];
+
+	for(int i = 0; i < _BoidCount; i++)
+	{
+		BoidData tempData = _BoidDataBuffer[i];
+		float3 dir = curData.pos - tempData.pos;
+		float dis = length(dir);
+		if(dis < _BoidDistance)
+		{
+			separation += dir;
+			alignment += tempData.rot;
+			cohesion += tempData.pos;
+			nearbyBoidCount++;
+		}
+	}
+
+		alignment /= nearbyBoidCount;
+		cohesion /= nearbyBoidCount;
+		cohesion = normalize(cohesion - curData.pos);
+		float3 direction = alignment + separation + cohesion;
+		float ip = exp(-4 * _DeltaTime);
+		direction = lerp(direction, normalize(curData.rot), ip);
+		curData.rot = direction;
+		curData.pos += direction * _DeltaTime * _Speed;
+		_BoidDataBuffer[id.x] = curData;
+}

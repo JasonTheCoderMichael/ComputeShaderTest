@@ -204,15 +204,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 244580567}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ce6bb30eb6363e4bb288379f033fbf8, type: 3}
+  m_Script: {fileID: 11500000, guid: 1115f5f8462ad72428e0812ddfe78a02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InstanceCount: 10000
+  BoidCount: 512
   mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  material: {fileID: 2100000, guid: 4d4e2a5192e72da4aa0d53119d776210, type: 2}
-  cmpShader: {fileID: 7200000, guid: ca94a52e5538847429132d2433bfe339, type: 3}
-  Speed: 27.9
-  CenterTrans: {fileID: 2018524512}
+  material: {fileID: 2100000, guid: d7ad5e4e2b55c2040af7f8e307792de2, type: 2}
+  cmpShader: {fileID: 7200000, guid: e53aa40adcfe9904fb462dd93f54d451, type: 3}
+  Speed: 22
+  BoidDistance: 8.5
+  Target: {fileID: 2018524512}
 --- !u!1 &2018524511
 GameObject:
   m_ObjectHideFlags: 0
