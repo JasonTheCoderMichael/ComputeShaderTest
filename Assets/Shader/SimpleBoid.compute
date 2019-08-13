@@ -40,9 +40,12 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 		alignment /= nearbyBoidCount;
 		cohesion /= nearbyBoidCount;
 		cohesion = normalize(cohesion - curData.pos);
+
 		float3 direction = alignment + separation + cohesion;
+
 		float ip = exp(-4 * _DeltaTime);
 		direction = lerp(direction, normalize(curData.rot), ip);
+		
 		curData.rot = direction;
 		curData.pos += direction * _DeltaTime * _Speed;
 		_BoidDataBuffer[id.x] = curData;

@@ -105,7 +105,7 @@ public class SimpleBoid : MonoBehaviour
             translation *= BOUND_SIZE;
             dataArray[i].pos = translation;
 
-            dataArray[i].rot = new Vector3(0,0,1); // new Vector3(Random.value, Random.value, Random.value) * 360;
+            dataArray[i].rot = new Vector3(Random.value, Random.value, Random.value) * 360;
             dataArray[i].scale = Vector3.one;
         }
 
