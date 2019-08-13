@@ -25,28 +25,39 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
 	for(int i = 0; i < _BoidCount; i++)
 	{
+		if(i == id.x)
+		{
+			continue;
+		}
+
 		BoidData tempData = _BoidDataBuffer[i];
 		float3 dir = curData.pos - tempData.pos;
 		float dis = length(dir);
 		if(dis < _BoidDistance)
 		{
-			separation += dir;
+			// // 原版, boid物体朝向会有抖动的情况 //
+			// separation += dir;
+
+			// 新版, 运动很自然 //
+			float scaler = clamp(1.0 - dis/_BoidDistance, 0.0, 1.0);
+			separation += dir * (scaler / dis);
+
 			alignment += tempData.rot;
 			cohesion += tempData.pos;
 			nearbyBoidCount++;
 		}
 	}
 
-		alignment /= nearbyBoidCount;
-		cohesion /= nearbyBoidCount;
-		cohesion = normalize(cohesion - curData.pos);
+	alignment /= nearbyBoidCount;
+	cohesion /= nearbyBoidCount;
+	cohesion = normalize(cohesion - curData.pos);
 
-		float3 direction = alignment + separation + cohesion;
+	float3 direction = alignment + separation + cohesion;
 
-		float ip = exp(-4 * _DeltaTime);
-		direction = lerp(direction, normalize(curData.rot), ip);
-		
-		curData.rot = direction;
-		curData.pos += direction * _DeltaTime * _Speed;
-		_BoidDataBuffer[id.x] = curData;
+	float ip = exp(-4 * _DeltaTime);
+	direction = lerp(direction, normalize(curData.rot), ip);
+	
+	curData.rot = direction;
+	curData.pos += direction * _DeltaTime * _Speed;
+	_BoidDataBuffer[id.x] = curData;
 }

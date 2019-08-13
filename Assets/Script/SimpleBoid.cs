@@ -59,9 +59,9 @@ public class SimpleBoid : MonoBehaviour
         m_dataBuffer.SetData(dataArray);
 
         // set parameter //
-        cmpShader.SetBuffer(m_kernel, "_BoidDataBuffer", m_dataBuffer);
         cmpShader.SetInt("_BoidCount", BoidCount);
-        
+        cmpShader.SetBuffer(m_kernel, "_BoidDataBuffer", m_dataBuffer);
+
         material.SetBuffer("_BoidDataBuffer", m_dataBuffer);
 
         // arg buffer //
@@ -85,8 +85,8 @@ public class SimpleBoid : MonoBehaviour
     {
         cmpShader.SetFloat("_Speed", Speed);
         cmpShader.SetFloat("_DeltaTime", Time.deltaTime);
-        cmpShader.Dispatch(m_kernel, GroupX, 1, 1);
         cmpShader.SetFloat("_BoidDistance", BoidDistance);
+        cmpShader.Dispatch(m_kernel, GroupX, 1, 1);
 
         if (Target != null)
         {

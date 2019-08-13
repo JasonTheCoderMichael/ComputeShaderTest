@@ -151,8 +151,6 @@
 
                     float3 worldPos = vertex;
 
-                    // float3 worldPos = v.vertex.xyz * data.scale + data.pos;
-
                     o.pos = mul(UNITY_MATRIX_VP, float4(worldPos, 1.0f));
 
                     o.worldNormal = UnityObjectToWorldNormal(v.normal);
