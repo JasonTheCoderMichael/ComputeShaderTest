@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0, g: 0.32857132, b: 1, a: 1}
+  m_AmbientSkyColor: {r: 0.5325739, g: 0.5560279, b: 0.6037736, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -174,8 +174,8 @@ Camera:
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
+  m_HDR: 0
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
@@ -207,7 +207,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1115f5f8462ad72428e0812ddfe78a02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BoidCount: 10000
+  BoidCount: 1000
   mesh: {fileID: 4300000, guid: ae4b0fdae15fd4a4aab8e12b879acf0b, type: 3}
   material: {fileID: 2100000, guid: d7ad5e4e2b55c2040af7f8e307792de2, type: 2}
   cmpShader: {fileID: 7200000, guid: e53aa40adcfe9904fb462dd93f54d451, type: 3}
@@ -241,7 +241,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 8
   m_Type: 1
-  m_Color: {r: 0.9150943, g: 0.21150766, b: 0.21150766, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30

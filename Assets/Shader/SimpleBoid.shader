@@ -102,13 +102,12 @@
                 NDotL = NDotL * 0.5 + 0.5;
 
                 float3 lightColor = _LightColor0.rgb;
-                float3 diffuse = lightColor * NDotL;
+                float3 diffuse = texColor * lightColor * NDotL;
 
                 // ambient //
                 float3 ambient = UNITY_LIGHTMODEL_AMBIENT;
 
                 // shadow //
-                
                 float shadow = SHADOW_ATTENUATION(i);
 
                 float3 finalColor = diffuse * shadow + ambient;
