@@ -101,11 +101,11 @@ public class SimpleBoid : MonoBehaviour
         BoidData[] dataArray = new BoidData[BoidCount];
         for (int i = 0; i < BoidCount; i++)
         {
-            Vector3 translation = new Vector3(Random.value, Random.value, Random.value) * 2 - Vector3.one;
-            translation *= BOUND_SIZE;
-            dataArray[i].pos = translation;
+            Vector3 pos = new Vector3(Random.value, Random.value, Random.value) * 2 - Vector3.one;
+            pos *= BOUND_SIZE;
+            dataArray[i].pos = pos;
 
-            dataArray[i].rot = new Vector3(Random.value, Random.value, Random.value) * 360;
+            dataArray[i].rot = Vector3.forward; // new Vector3(Random.value, Random.value, Random.value) * 360;
             dataArray[i].scale = Vector3.one;
         }
 
