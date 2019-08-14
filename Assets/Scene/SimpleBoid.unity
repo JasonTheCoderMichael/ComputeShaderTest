@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.5325739, g: 0.5560279, b: 0.6037736, a: 1}
+  m_AmbientSkyColor: {r: 0.25516194, g: 0.46570554, b: 0.8867924, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -208,10 +208,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BoidCount: 1000
-  mesh: {fileID: 4300000, guid: ae4b0fdae15fd4a4aab8e12b879acf0b, type: 3}
+  mesh: {fileID: 4300000, guid: d5d4e1d08245dfc4ea470698e1196b64, type: 3}
   material: {fileID: 2100000, guid: d7ad5e4e2b55c2040af7f8e307792de2, type: 2}
   cmpShader: {fileID: 7200000, guid: e53aa40adcfe9904fb462dd93f54d451, type: 3}
-  Speed: 5
+  Speed: 6
   BoidDistance: 5
   Target: {fileID: 2018524512}
 --- !u!1 &984297190
@@ -247,7 +247,7 @@ Light:
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1

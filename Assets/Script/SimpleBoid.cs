@@ -27,7 +27,7 @@ public class SimpleBoid : MonoBehaviour
     private struct BoidData
     {
         public Vector3 pos;
-        public Vector3 rot;
+        public Vector3 forward;
         public Vector3 scale;
     }
 
@@ -105,7 +105,7 @@ public class SimpleBoid : MonoBehaviour
             pos *= BOUND_SIZE;
             dataArray[i].pos = pos;
 
-            dataArray[i].rot = Vector3.forward; // new Vector3(Random.value, Random.value, Random.value) * 360;
+            dataArray[i].forward = Vector3.forward; // new Vector3(Random.value, Random.value, Random.value) * 360;
             dataArray[i].scale = Vector3.one;
         }
 

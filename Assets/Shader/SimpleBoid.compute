@@ -3,7 +3,7 @@
 struct BoidData
 {
 	float3 pos;
-	float3 rot;
+	float3 forward;
 	float3 scale;
 };
 
@@ -38,11 +38,11 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 			// // 原版, boid物体朝向会有抖动的情况 //
 			// separation += dir;
 
-			// 新版, 运动很自然 //
+			// NOTE, 新版, 运动很自然, 距离越近对separation的影响越大 //
 			float scaler = clamp(1.0 - dis/_BoidDistance, 0.0, 1.0);
 			separation += dir * (scaler / dis);
 
-			alignment += tempData.rot;
+			alignment += tempData.forward;
 			cohesion += tempData.pos;
 			nearbyBoidCount++;
 		}
@@ -54,10 +54,10 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
 	float3 direction = alignment + separation + cohesion;
 
-	float ip = exp(-4 * _DeltaTime);
-	direction = lerp(direction, normalize(curData.rot), ip);
+	float ip = 0.965; // exp(-4 * _DeltaTime);
+	direction = lerp(direction, normalize(curData.forward), ip);
 	
-	curData.rot = direction;
+	curData.forward = direction;
 	curData.pos += direction * _DeltaTime * _Speed;
 	_BoidDataBuffer[id.x] = curData;
 }

@@ -10,7 +10,7 @@
     struct BoidData
     {
         float3 pos;
-        float3 rot;
+        float3 forward;
         float3 scale;
     };
     // #if SHADER_TARGET >= 45
@@ -40,7 +40,7 @@
             #include "UnityLightingCommon.cginc"
             #include "AutoLight.cginc"
 
-            static float PI = 3.141593;
+            #include "./IncludeFile/Common.cginc"
             
             struct appdata
             {
@@ -65,72 +65,6 @@
             float4 _MainTex_ST;
             float4 _MainColor;
 
-            // 对顶点进行欧拉角旋转, ZXY顺序 //
-            float3 RotateEulerAngle(float3 vertex, float3 angleDeg)
-            {
-                angleDeg = angleDeg*PI/180.0;
-
-                float sinX,cosX;
-                sincos(angleDeg.x, sinX, cosX);
-                float3x3 rotateMatrix_X = float3x3(
-                    1, 0, 0,
-                    0, cosX, sinX,
-                    0, -sinX, cosX
-                );
-
-                float sinY,cosY;
-                sincos(angleDeg.y, sinY, cosY);
-                float3x3 rotateMatrix_Y = float3x3(
-                    cosY, 0, -sinY,
-                    0, 1, 0,
-                    sinY, 0, cosY
-                );
-
-                float sinZ,cosZ;
-                sincos(angleDeg.z, sinZ, cosZ);
-                float3x3 rotateMatrix_Z = float3x3(
-                    cosZ, sinZ, 0,
-                    -sinZ, cosZ, 0,
-                    0, 0, 1
-                );
-
-                // unity中欧拉角的旋转顺序是 Z -> X -> Y //
-                // https://docs.unity3d.com/ScriptReference/Transform-eulerAngles.html //
-                vertex = mul(rotateMatrix_Z, vertex);
-                vertex = mul(rotateMatrix_X, vertex);
-                vertex = mul(rotateMatrix_Y, vertex);
-
-                return vertex;
-            }
-
-            // 左手坐标系 //
-            float3 Rotate(float3 vertex, float3 forward, float3 up)
-            {
-                forward = normalize(forward);
-                up = normalize(up);
-
-                float3 right = cross(up, forward);
-                right = normalize(right);
-
-                up = cross(forward, right);
-                up = normalize(up);
-
-                float3x3 rotateMatrix = float3x3(
-                    right.x, up.x, forward.x,
-                    right.y, up.y, forward.y,
-                    right.z, up.z, forward.z
-                );
-
-                // 不应该是用下面这个矩阵吗? //
-                // float3x3 rotateMatrix = float3x3(
-                //     right.x, right.y, right.z,
-                //     up.x, up.y, up.z,
-                //     forward.x, forward.y, forward.z
-                // );
-
-                return mul(rotateMatrix, vertex);
-            }
-
             v2f vert (appdata v)
             {
                 v2f o;
@@ -143,8 +77,7 @@
                     float3 vertex = v.vertex.xyz * data.scale;
 
                     // rotate //
-                    // vertex = RotateEulerAngle(vertex, data.rot);
-                    vertex = Rotate(vertex, data.rot, float3(0,1,0));
+                    vertex = Rotate(vertex, data.forward, float3(0,1,0));
 
                     // translate //
                     vertex += data.pos;
@@ -208,6 +141,7 @@
 			#pragma multi_compile_shadowcaster
 
 			#include "UnityCG.cginc"
+            #include "./IncludeFile/Common.cginc"
 
             struct VertexData
             {
@@ -223,8 +157,19 @@
 			{
                 v2f o;
                 BoidData data = _BoidDataBuffer[instanceID];
-                float3 worldPos = v.vertex.xyz * data.scale + data.pos;
-                o.vertex = mul(UNITY_MATRIX_VP, float4(worldPos, 1.0f));
+
+                    // scale //
+                    float3 vertex = v.vertex.xyz * data.scale;
+
+                    // rotate //
+                    vertex = Rotate(vertex, data.forward, float3(0,1,0));
+
+                    // translate //
+                    vertex += data.pos;
+
+                    float3 worldPos = vertex;
+
+                    o.vertex = mul(UNITY_MATRIX_VP, float4(worldPos, 1.0f));
                 return o;
 			}
 
