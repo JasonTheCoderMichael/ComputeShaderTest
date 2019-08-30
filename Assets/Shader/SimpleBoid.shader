@@ -1,5 +1,7 @@
 ﻿Shader "MJ/SimpleBoid"
 {
+    // TODO: 把 ambient 从HDR转到LDR //
+    
     Properties
     {
         _MainColor("Main Color(RGB)", Color) = (1,1,1,1)
@@ -114,7 +116,8 @@
                 NDotL = NDotL * 0.5 + 0.5;
 
                 float3 lightColor = _LightColor0.rgb;
-                float3 diffuse = texColor * lightColor * NDotL;
+                // float3 diffuse = texColor * lightColor * NDotL;
+                float3 diffuse = 1 * lightColor * NDotL;
 
                 // ambient //
                 float3 ambient = UNITY_LIGHTMODEL_AMBIENT;
@@ -122,7 +125,7 @@
                 // shadow //
                 float shadow = SHADOW_ATTENUATION(i);
 
-                float3 finalColor = diffuse * shadow + ambient;
+                float3 finalColor = diffuse * shadow + ambient*0.3;
 
                 return float4(finalColor, 1);
             }
